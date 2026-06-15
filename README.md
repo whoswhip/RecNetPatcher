@@ -20,7 +20,7 @@ Metadata patching works on all il2cpp builds (even past May 2023) except for any
 
 The metadata isn't actually encrypted at all, its just in a different format
 
-### Photon Id Patcching
+### Photon Id Patching
 
 Photon Id patching should work on literally any file since it directly changes the bytes, the only thing that could prevent this is something like EAC checking the hash.
 
