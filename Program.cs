@@ -10,6 +10,7 @@ internal static class Program
         RootCommand command = new("Patches Rec Room server URLs to the provided URL.");
         command.Subcommands.Add(CreateMetadataCommand());
         command.Subcommands.Add(CreateDllCommand());
+        command.Subcommands.Add(CreatePhotonCommand());
 
         try
         {
@@ -64,6 +65,31 @@ internal static class Program
             RunDll(inputFile, outputFile, replacement);
         });
 
+        return command;
+    }
+
+    private static Command CreatePhotonCommand()
+    {
+        Argument<FileInfo> input = CreateInputArgument();
+        Argument<FileInfo> output = CreateOutputArgument();
+        Argument<string[]> replacementIds = new("ids") { Description = "New ids" };
+        Option<string[]> originalIds = new("original-ids") { Description = "Ids being replaced" };
+
+        Command command = new("photon", "Patches Photon Ids");
+        command.Arguments.Add(input);
+        command.Arguments.Add(output);
+        command.Arguments.Add(replacementIds);
+        command.Options.Add(originalIds);
+        command.SetAction(parseResult =>
+        {
+            FileInfo inputFile = parseResult.GetValue(input)!;
+            FileInfo outputFile = parseResult.GetValue(output)!;
+            string[] replacements = parseResult.GetValue(replacementIds)!;
+            string[] originals = parseResult.GetValue(originalIds)!;
+            if (originals?.Length == 0 || originals is null)
+                originals = PatcherConstants.RecRoomPhotonIds;
+            RunPhoton(inputFile, outputFile, replacements, originals);
+        });
         return command;
     }
 
@@ -124,6 +150,22 @@ internal static class Program
         PrintPatchHeader(input, output, replacement);
         Console.WriteLine();
         PrintLog(log);
+    }
+
+    private static void RunPhoton(
+        FileInfo input,
+        FileInfo output,
+        string[] replacementIds,
+        string[] photonIds
+    )
+    {
+        byte[] data = ReadAllBytesShared(input.FullName);
+        List<string> log = [];
+        bool isPatched = PhotonPatcher.TryPatch(ref data, photonIds, replacementIds, log);
+        if (!isPatched)
+            throw new InvalidOperationException("could not find patchable photon ids");
+
+        File.WriteAllBytes(output.FullName, data);
     }
 
     private static void PrintPatchHeader(FileInfo input, FileInfo output, string replacement)
