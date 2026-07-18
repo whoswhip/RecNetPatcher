@@ -1,4 +1,4 @@
-namespace RecNetPatcher;
+namespace RecNetPatcher.Core;
 
 internal static class PatcherConstants
 {

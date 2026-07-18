@@ -1,7 +1,7 @@
 using System.CommandLine;
-using System.Text;
+using RecNetPatcher.Core;
 
-namespace RecNetPatcher;
+namespace RecNetPatcher.CLI;
 
 internal static class Program
 {
@@ -87,7 +87,7 @@ internal static class Program
             string[] replacements = parseResult.GetValue(replacementIds)!;
             string[] originals = parseResult.GetValue(originalIds)!;
             if (originals?.Length == 0 || originals is null)
-                originals = PatcherConstants.RecRoomPhotonIds;
+                originals = [.. PatcherDefaults.RecRoomPhotonIds];
             RunPhoton(inputFile, outputFile, replacements, originals);
         });
         return command;
@@ -110,43 +110,23 @@ internal static class Program
 
     private static void RunMetadata(FileInfo input, FileInfo output, string replacement)
     {
-        byte[] data = ReadAllBytesShared(input.FullName);
-        byte[] oldBytes = Encoding.UTF8.GetBytes(PatcherConstants.MetadataUrl);
-        byte[] newBytes = Encoding.UTF8.GetBytes(replacement);
-
-        if (newBytes.Length == 0)
-            throw new InvalidOperationException("replacement cannot be empty.");
-
-        List<string> log = [];
-        bool isStandardMetadata =
-            StandardMetadataPatcher.ReadU32(data, 0) == PatcherConstants.StandardMetadataMagic;
-        bool isPatched = isStandardMetadata
-            ? StandardMetadataPatcher.TryPatch(ref data, oldBytes, newBytes, log)
-            : CustomMetadataPatcher.TryPatch(ref data, oldBytes, newBytes, log);
-
-        if (!isPatched)
-            throw new InvalidOperationException(
-                $"could not find a patchable {PatcherConstants.MetadataUrl} entry."
-            );
-
-        File.WriteAllBytes(output.FullName, data);
+        IReadOnlyList<string> log = Patcher.PatchMetadata(
+            input.FullName,
+            output.FullName,
+            replacement
+        );
         PrintPatchHeader(input, output, replacement);
-        Console.WriteLine($"old length:  {oldBytes.Length}");
-        Console.WriteLine($"new length:  {newBytes.Length}");
         Console.WriteLine();
         PrintLog(log);
     }
 
     private static void RunDll(FileInfo input, FileInfo output, string replacement)
     {
-        List<string> log = [];
-        bool isPatched = DllPatcher.TryPatch(input.FullName, output.FullName, replacement, log);
-
-        if (!isPatched)
-            throw new InvalidOperationException(
-                "could not find a patchable ns.rec.net or recroom.againstgrav.com string."
-            );
-
+        IReadOnlyList<string> log = Patcher.PatchDll(
+            input.FullName,
+            output.FullName,
+            replacement
+        );
         PrintPatchHeader(input, output, replacement);
         Console.WriteLine();
         PrintLog(log);
@@ -159,15 +139,8 @@ internal static class Program
         string[] photonIds
     )
     {
-        byte[] data = ReadAllBytesShared(input.FullName);
-        List<string> log = [];
-        bool isPatched = PhotonPatcher.TryPatch(ref data, photonIds, replacementIds, log);
-        if (!isPatched)
-            throw new InvalidOperationException("could not find patchable photon ids");
-
-        File.WriteAllBytes(output.FullName, data);
+        Patcher.PatchPhoton(input.FullName, output.FullName, replacementIds, photonIds);
     }
-
     private static void PrintPatchHeader(FileInfo input, FileInfo output, string replacement)
     {
         Console.WriteLine($"input:       {input.FullName}");
@@ -181,28 +154,4 @@ internal static class Program
             Console.WriteLine(line);
     }
 
-    private static byte[] ReadAllBytesShared(string path)
-    {
-        using FileStream stream = new(
-            path,
-            FileMode.Open,
-            FileAccess.Read,
-            FileShare.ReadWrite | FileShare.Delete
-        );
-
-        byte[] data = new byte[stream.Length];
-        int read = 0;
-
-        while (read < data.Length)
-        {
-            int count = stream.Read(data, read, data.Length - read);
-
-            if (count == 0)
-                throw new EndOfStreamException($"Unexpected EOF while reading {path}");
-
-            read += count;
-        }
-
-        return data;
-    }
 }

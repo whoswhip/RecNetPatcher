@@ -1,6 +1,6 @@
 using System.Buffers.Binary;
 
-namespace RecNetPatcher;
+namespace RecNetPatcher.Core;
 
 internal static class StandardMetadataPatcher
 {

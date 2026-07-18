@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace RecNetPatcher;
+namespace RecNetPatcher.Core;
 
 internal static class PhotonPatcher
 {

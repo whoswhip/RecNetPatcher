@@ -1,7 +1,7 @@
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
-namespace RecNetPatcher;
+namespace RecNetPatcher.Core;
 
 internal static class DllPatcher
 {

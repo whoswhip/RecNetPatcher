@@ -1,6 +1,14 @@
 # RecNet Patcher
 
-RecNet Patcher is a cli tool used for patching server urls/Photon Ids within RecRoom global metadata, resources, or managed Dlls.
+RecNet Patcher patches server URLs and Photon IDs within Rec Room global metadata,
+resources, and managed DLLs. This repository contains a shared patching library,
+a command-line interface, and a WPF powered GUI.
+
+## Projects
+
+- `RecNetPatcher.Core` - reusable patching library
+- `RecNetPatcher.CLI` - cross-platform command-line interface
+- `RecNetPatcher.GUI` - Windows GUI built with WPF
 
 ## Usage
 
@@ -33,7 +41,18 @@ Photon Id patching should work on literally any file since it directly changes t
 - .net 10 SDK
 
 **Building**:
-Just run `dotnet build` in a cli, or you can use Visual Studio.
+
+Build all three projects from the repository root:
+
+`dotnet build RecNetPatcher.slnx`
+
+Run the CLI:
+
+`dotnet run --project RecNetPatcher.CLI -- --help`
+
+Run the GUI on Windows:
+
+`dotnet run --project RecNetPatcher.GUI`
 
 ## License
 
