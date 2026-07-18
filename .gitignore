@@ -318,3 +318,4 @@ FodyWeavers.xsd
 *.dat
 *.assets
 *.assets.*
+!RecNetPatcher.Tests/TestData/*.gz

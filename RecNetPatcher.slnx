@@ -2,4 +2,5 @@
   <Project Path="RecNetPatcher.Core/RecNetPatcher.Core.csproj" />
   <Project Path="RecNetPatcher.CLI/RecNetPatcher.CLI.csproj" />
   <Project Path="RecNetPatcher.GUI/RecNetPatcher.GUI.csproj" />
+  <Project Path="RecNetPatcher.Tests/RecNetPatcher.Tests.csproj" />
 </Solution>

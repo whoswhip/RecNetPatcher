@@ -9,6 +9,7 @@ a command-line interface, and a WPF powered GUI.
 - `RecNetPatcher.Core` - reusable patching library
 - `RecNetPatcher.CLI` - cross-platform command-line interface
 - `RecNetPatcher.GUI` - Windows GUI built with WPF
+- `RecNetPatcher.Tests` - xUnit integration tests using compressed fixtures
 
 ## Usage
 
@@ -42,7 +43,7 @@ Photon Id patching should work on literally any file since it directly changes t
 
 **Building**:
 
-Build all three projects from the repository root:
+Build all four projects from the repository root:
 
 `dotnet build RecNetPatcher.slnx`
 
@@ -53,6 +54,10 @@ Run the CLI:
 Run the GUI on Windows:
 
 `dotnet run --project RecNetPatcher.GUI`
+
+Run the tests:
+
+`dotnet test RecNetPatcher.slnx`
 
 ## License
 
