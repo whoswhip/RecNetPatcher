@@ -21,7 +21,7 @@ When patching Dlls it is required you either run it in the managed folder or hav
 
 ### Metadata Patching
 
-Metadata patching works on all il2cpp builds (even past May 2023) except for anything past late 2024-ish as the metadata file is just a dummy file from then on.
+Metadata patching works on all il2cpp builds (even after July 4th 2023) except for anything past August 20th 2024 as the metadata file is just a dummy file from then on.
 
 `RecNetPatcher.exe metadata <input> <output> "url"`
 
